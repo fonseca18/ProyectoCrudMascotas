@@ -1,0 +1,1 @@
+{"ast":null,"code":"export const environment = {\n  production: false,\n  apiBaseUrl: 'https://crudcrud.com/api/a5c062bd84f7458dafa799207fa5b5e2'\n};","map":null,"metadata":{},"sourceType":"module","externalDependencies":[]}

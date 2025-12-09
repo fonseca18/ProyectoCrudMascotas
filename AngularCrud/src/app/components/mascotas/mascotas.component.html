@@ -1,0 +1,60 @@
+<div class="container">
+  <h1>Gestion de Mascotas</h1>
+
+  <div class="form-card">
+    <h2>{{ mascotaEditando ? 'Editar Mascota' : 'Nueva Mascota' }}</h2>
+    <form (ngSubmit)="guardarMascota()">
+      <div>
+        <label>Nombre:</label>
+        <input type="text" [(ngModel)]="mascotaForm.nombre" name="nombre" required>
+      </div>
+      <div>
+        <label>Especie:</label>
+        <input type="text" [(ngModel)]="mascotaForm.especie" name="especie" required>
+      </div>
+      <div>
+        <label>Raza:</label>
+        <input type="text" [(ngModel)]="mascotaForm.raza" name="raza" required>
+      </div>
+      <div>
+        <label>Edad:</label>
+        <input type="number" [(ngModel)]="mascotaForm.edad" name="edad" required>
+      </div>
+      <div>
+        <label>Dueño:</label>
+        <input type="text" [(ngModel)]="mascotaForm.dueno" name="dueno" required>
+      </div>
+      <button type="submit">{{ mascotaEditando ? 'Actualizar' : 'Guardar' }}</button>
+      <button type="button" (click)="limpiarFormulario()">Limpiar</button>
+    </form>
+  </div>
+
+  <div class="table-card">
+    <h2>Lista de Mascotas</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Especie</th>
+          <th>Raza</th>
+          <th>Edad</th>
+          <th>Dueño</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let mascota of mascotas">
+          <td>{{ mascota.nombre }}</td>
+          <td>{{ mascota.especie }}</td>
+          <td>{{ mascota.raza }}</td>
+          <td>{{ mascota.edad }}</td>
+          <td>{{ mascota.dueno }}</td>
+          <td>
+            <button (click)="editarMascota(mascota)">Editar</button>
+            <button (click)="eliminarMascota(mascota._id)">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
