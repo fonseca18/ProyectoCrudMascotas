@@ -1,37 +1,73 @@
+<header class="app-header">
+  <div class="header-content">
+    <div class="logo-section">
+      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 250 250' width='40' height='40'%3E%3Cpath fill='%23DD0031' d='M125 30l.3 2.3h2l-2 1.5 1 1.6-2-1.6-2 1.6 1-1.6-2-1.5h2l.3-2.3z'/%3E%3Ctext x='50' y='35' font-size='20' font-weight='bold' fill='%23DD0031'%3EAngular CRUD%3C/text%3E%3C/svg%3E" alt="Angular" class="logo-img">
+      <h1 class="app-title">Gestión de Mascotas</h1>
+    </div>
+    <div class="search-bar">
+      <input type="text" [(ngModel)]="searchTerm" placeholder="Buscar mascota..." class="search-input">
+    </div>
+  </div>
+</header>
+
 <div class="container">
-  <h1>Gestion de Mascotas</h1>
 
   <div class="form-card">
     <h2>{{ mascotaEditando ? 'Editar Mascota' : 'Nueva Mascota' }}</h2>
     <form (ngSubmit)="guardarMascota()">
-      <div>
+      
+      <div class="form-group">
         <label>Nombre:</label>
-        <input type="text" [(ngModel)]="mascotaForm.nombre" name="nombre" required>
+        <input type="text" [(ngModel)]="mascotaForm.nombre" name="nombre" placeholder="Ej: Luna" class="form-input">
+        <span class="error-message" *ngIf="!isNombreValido()">El nombre es requerido</span>
       </div>
-      <div>
+
+      <div class="form-group">
         <label>Especie:</label>
-        <input type="text" [(ngModel)]="mascotaForm.especie" name="especie" required>
+        <input type="text" [(ngModel)]="mascotaForm.especie" name="especie" placeholder="Ej: Perro" class="form-input">
+        <span class="error-message" *ngIf="!isEspecieValido()">La especie es requerida</span>
       </div>
-      <div>
+
+      <div class="form-group">
         <label>Raza:</label>
-        <input type="text" [(ngModel)]="mascotaForm.raza" name="raza" required>
+        <input type="text" [(ngModel)]="mascotaForm.raza" name="raza" placeholder="Ej: Labrador" class="form-input">
+        <span class="error-message" *ngIf="!isRazaValida()">La raza es requerida</span>
       </div>
-      <div>
-        <label>Edad:</label>
-        <input type="number" [(ngModel)]="mascotaForm.edad" name="edad" required>
+
+      <div class="form-group">
+        <label>Edad: (Mínimo: {{ edadMinima }}, Máximo: {{ edadMaxima }})</label>
+        <input type="number" [(ngModel)]="mascotaForm.edad" name="edad" min="0" max="50" class="form-input">
+        <span class="error-message" *ngIf="!isEdadValida()">
+          La edad debe estar entre {{ edadMinima }} y {{ edadMaxima }} años
+        </span>
       </div>
-      <div>
+
+      <div class="form-group">
         <label>Dueño:</label>
-        <input type="text" [(ngModel)]="mascotaForm.dueno" name="dueno" required>
+        <input type="text" [(ngModel)]="mascotaForm.dueno" name="dueno" placeholder="Ej: Juan Pérez" class="form-input">
+        <span class="error-message" *ngIf="!isDuenoValido()">El nombre del dueño es requerido</span>
       </div>
-      <button type="submit">{{ mascotaEditando ? 'Actualizar' : 'Guardar' }}</button>
-      <button type="button" (click)="limpiarFormulario()">Limpiar</button>
+
+      <div class="button-group">
+        <button type="submit" [disabled]="!esFormularioValido()" class="btn btn-primary">
+          {{ mascotaEditando ? 'Actualizar' : 'Guardar' }}
+        </button>
+        <button type="button" (click)="limpiarFormulario()" class="btn btn-secondary">
+          Limpiar
+        </button>
+        <button *ngIf="mascotaEditando" type="button" (click)="cancelarEdicion()" class="btn btn-danger">
+          Cancelar Edición
+        </button>
+      </div>
     </form>
   </div>
 
   <div class="table-card">
-    <h2>Lista de Mascotas</h2>
-    <table>
+    <h2>Lista de Mascotas ({{ obtenerMascotasFiltradas().length }})</h2>
+    <div *ngIf="obtenerMascotasFiltradas().length === 0" class="empty-message">
+      No hay mascotas registradas
+    </div>
+    <table *ngIf="obtenerMascotasFiltradas().length > 0">
       <thead>
         <tr>
           <th>Nombre</th>
@@ -43,18 +79,19 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let mascota of mascotas">
+        <tr *ngFor="let mascota of obtenerMascotasFiltradas()">
           <td>{{ mascota.nombre }}</td>
           <td>{{ mascota.especie }}</td>
           <td>{{ mascota.raza }}</td>
-          <td>{{ mascota.edad }}</td>
+          <td>{{ mascota.edad }} años</td>
           <td>{{ mascota.dueno }}</td>
-          <td>
-            <button (click)="editarMascota(mascota)">Editar</button>
-            <button (click)="eliminarMascota(mascota._id)">Eliminar</button>
+          <td class="action-buttons">
+            <button (click)="editarMascota(mascota)" class="btn btn-edit">Editar</button>
+            <button (click)="eliminarMascota(mascota._id)" class="btn btn-delete">Eliminar</button>
           </td>
         </tr>
       </tbody>
     </table>
   </div>
+
 </div>

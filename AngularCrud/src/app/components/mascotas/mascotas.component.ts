@@ -18,6 +18,9 @@ export class MascotasComponent implements OnInit {
     dueno: ''
   };
   mascotaEditando: Mascota | null = null;
+  edadMinima: number = 0;
+  edadMaxima: number = 50;
+  searchTerm: string = '';
 
   constructor(private mascotasService: MascotasService) {}
 
@@ -38,6 +41,11 @@ export class MascotasComponent implements OnInit {
   }
 
   guardarMascota(): void {
+    if (!this.esFormularioValido()) {
+      alert('Por favor completa todos los campos correctamente');
+      return;
+    }
+
     if (this.mascotaEditando && this.mascotaEditando._id) {
       this.mascotasService.actualizarMascota(this.mascotaEditando._id, this.mascotaForm).subscribe({
         next: () => {
@@ -62,6 +70,10 @@ export class MascotasComponent implements OnInit {
     this.mascotaForm = { ...mascota };
   }
 
+  cancelarEdicion(): void {
+    this.limpiarFormulario();
+  }
+
   eliminarMascota(id: string | undefined): void {
     if (!id) return;
     if (confirm('¿Eliminar esta mascota?')) {
@@ -81,5 +93,47 @@ export class MascotasComponent implements OnInit {
       dueno: ''
     };
     this.mascotaEditando = null;
+  }
+
+  esFormularioValido(): boolean {
+    return (
+      this.mascotaForm.nombre.trim() !== '' &&
+      this.mascotaForm.especie.trim() !== '' &&
+      this.mascotaForm.raza.trim() !== '' &&
+      this.mascotaForm.edad >= this.edadMinima &&
+      this.mascotaForm.edad <= this.edadMaxima &&
+      this.mascotaForm.dueno.trim() !== ''
+    );
+  }
+
+  isNombreValido(): boolean {
+    return this.mascotaForm.nombre.trim() !== '';
+  }
+
+  isEspecieValido(): boolean {
+    return this.mascotaForm.especie.trim() !== '';
+  }
+
+  isRazaValida(): boolean {
+    return this.mascotaForm.raza.trim() !== '';
+  }
+
+  isEdadValida(): boolean {
+    return this.mascotaForm.edad >= this.edadMinima && this.mascotaForm.edad <= this.edadMaxima;
+  }
+
+  isDuenoValido(): boolean {
+    return this.mascotaForm.dueno.trim() !== '';
+  }
+
+  obtenerMascotasFiltradas(): Mascota[] {
+    if (!this.searchTerm.trim()) {
+      return this.mascotas;
+    }
+    return this.mascotas.filter(m =>
+      m.nombre.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+      m.especie.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+      m.dueno.toLowerCase().includes(this.searchTerm.toLowerCase())
+    );
   }
 }
