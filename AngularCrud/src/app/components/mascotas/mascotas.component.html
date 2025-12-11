@@ -1,129 +1,188 @@
-<header class="app-header">
-  <div class="header-content">
-    <div class="logo-section">
-      <svg class="angular-logo" viewBox="0 0 250 250" xmlns="http://www.w3.org/2000/svg">
-        <polygon id="triangle" points="125,30 125,30 20,200 230,200" fill="#DD0031"/>
-        <polygon id="triangle-outline" points="125,30 125,70 142,125 125,190 108,125 125,70" fill="#F2F2F2"/>
-      </svg>
-      <span class="header-title">ANGULAR</span>
+<header class="navbar">
+  <div class="navbar-container">
+    <div class="navbar-brand">
+      <span class="brand-text">CRUD Mascotas • Andrés Fonseca - Luis Solano</span>
     </div>
-    <div class="search-bar">
-      <input type="text" [(ngModel)]="searchTerm" placeholder="🔍 Buscar mascota..." class="search-input">
+    <div class="search-container">
+      <input type="text" [(ngModel)]="searchTerm" placeholder="🔍 Buscar..." class="search-input">
     </div>
   </div>
 </header>
 
-<div class="container">
-  <div class="form-card">
-    <div class="form-header">
-      <h2>{{ mascotaEditando ? '✏️ Editar Mascota' : '➕ Nueva Mascota' }}</h2>
+<main class="main-content">
+  <div class="page-container">
+  <div class="form-section">
+      <div class="form-card">
+        <div class="form-title-section">
+          <h2 class="form-title">{{ mascotaEditando ? 'Editar' : 'Registrar' }}</h2>
+          <p class="form-subtitle">{{ mascotaEditando ? 'Actualiza los datos' : 'Nueva mascota' }}</p>
+        </div>
+
+        <form class="form" (ngSubmit)="guardarMascota()">
+          <div class="form-grid">
+            <!-- Nombre -->
+            <div class="form-field">
+              <label class="field-label">
+                <span>Nombre</span>
+                <span class="required">*</span>
+              </label>
+              <div class="input-group">
+                <span class="input-icon">🐶</span>
+                <input 
+                  type="text" 
+                  [(ngModel)]="mascotaForm.nombre" 
+                  name="nombre" 
+                  placeholder="Luna"
+                  class="form-input"
+                  [class.is-invalid]="!isNombreValido()">
+              </div>
+              <span class="error-text" *ngIf="!isNombreValido()">Requerido</span>
+            </div>
+
+            <!-- Especie -->
+            <div class="form-field">
+              <label class="field-label">
+                <span>Especie</span>
+                <span class="required">*</span>
+              </label>
+              <div class="input-group">
+                <span class="input-icon">🦁</span>
+                <input 
+                  type="text" 
+                  [(ngModel)]="mascotaForm.especie" 
+                  name="especie"
+                  placeholder="Perro"
+                  class="form-input"
+                  [class.is-invalid]="!isEspecieValido()">
+              </div>
+              <span class="error-text" *ngIf="!isEspecieValido()">Requerido</span>
+            </div>
+
+            <!-- Raza -->
+            <div class="form-field">
+              <label class="field-label">
+                <span>Raza</span>
+                <span class="required">*</span>
+              </label>
+              <div class="input-group">
+                <span class="input-icon">📌</span>
+                <input 
+                  type="text" 
+                  [(ngModel)]="mascotaForm.raza" 
+                  name="raza"
+                  placeholder="Labrador"
+                  class="form-input"
+                  [class.is-invalid]="!isRazaValida()">
+              </div>
+              <span class="error-text" *ngIf="!isRazaValida()">Requerido</span>
+            </div>
+
+            <!-- Edad -->
+            <div class="form-field">
+              <label class="field-label">
+                <span>Edad</span>
+                <span class="required">*</span>
+                <span class="age-range">(0-50)</span>
+              </label>
+              <div class="input-group">
+                <span class="input-icon">📅</span>
+                <input 
+                  type="number" 
+                  [(ngModel)]="mascotaForm.edad" 
+                  name="edad"
+                  min="0" 
+                  max="50"
+                  placeholder="5"
+                  class="form-input"
+                  [class.is-invalid]="!isEdadValida()">
+              </div>
+              <span class="error-text" *ngIf="!isEdadValida()">0-50 años</span>
+            </div>
+
+            <!-- Dueño -->
+            <div class="form-field form-field-full">
+              <label class="field-label">
+                <span>Dueño</span>
+                <span class="required">*</span>
+              </label>
+              <div class="input-group">
+                <span class="input-icon">👤</span>
+                <input 
+                  type="text" 
+                  [(ngModel)]="mascotaForm.dueno" 
+                  name="dueno"
+                  placeholder="Juan Pérez"
+                  class="form-input"
+                  [class.is-invalid]="!isDuenoValido()">
+              </div>
+              <span class="error-text" *ngIf="!isDuenoValido()">Requerido</span>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" [disabled]="!esFormularioValido()" class="btn btn-save">
+              {{ mascotaEditando ? '💾 Actualizar' : '➕ Guardar' }}
+            </button>
+            <button type="button" (click)="limpiarFormulario()" class="btn btn-reset">
+              Limpiar
+            </button>
+            <button *ngIf="mascotaEditando" type="button" (click)="cancelarEdicion()" class="btn btn-cancel">
+              ❌ Cancelar
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
-    
-    <form (ngSubmit)="guardarMascota()" class="form">
-      
-      <div class="form-row">
-        <div class="form-group">
-          <label>Nombre</label>
-          <div class="input-wrapper">
-            <input type="text" [(ngModel)]="mascotaForm.nombre" name="nombre" placeholder="Ej: Luna" class="form-input" [class.invalid]="!isNombreValido()">
-            <span class="error-icon" *ngIf="!isNombreValido()">⚠️</span>
-          </div>
-          <span class="error-message" *ngIf="!isNombreValido()">El nombre es obligatorio</span>
+
+    <!-- TABLE SECTION -->
+    <div class="table-section">
+      <div class="table-card">
+        <div class="table-title-section">
+          <h2 class="table-title">Mis Mascotas</h2>
+          <span class="pets-count">{{ obtenerMascotasFiltradas().length }}</span>
         </div>
 
-        <div class="form-group">
-          <label>Especie</label>
-          <div class="input-wrapper">
-            <input type="text" [(ngModel)]="mascotaForm.especie" name="especie" placeholder="Ej: Perro" class="form-input" [class.invalid]="!isEspecieValido()">
-            <span class="error-icon" *ngIf="!isEspecieValido()">⚠️</span>
-          </div>
-          <span class="error-message" *ngIf="!isEspecieValido()">La especie es obligatoria</span>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label>Raza</label>
-          <div class="input-wrapper">
-            <input type="text" [(ngModel)]="mascotaForm.raza" name="raza" placeholder="Ej: Labrador" class="form-input" [class.invalid]="!isRazaValida()">
-            <span class="error-icon" *ngIf="!isRazaValida()">⚠️</span>
-          </div>
-          <span class="error-message" *ngIf="!isRazaValida()">La raza es obligatoria</span>
+        <!-- EMPTY STATE -->
+        <div *ngIf="obtenerMascotasFiltradas().length === 0" class="empty-state">
+          <div class="empty-icon">🐾</div>
+          <h3 class="empty-title">Sin mascotas</h3>
+          <p class="empty-text">Agrega tu primera mascota</p>
         </div>
 
-        <div class="form-group">
-          <label>Edad ({{ edadMinima }} - {{ edadMaxima }} años)</label>
-          <div class="input-wrapper">
-            <input type="number" [(ngModel)]="mascotaForm.edad" name="edad" min="0" max="50" class="form-input" [class.invalid]="!isEdadValida()">
-            <span class="error-icon" *ngIf="!isEdadValida()">⚠️</span>
-          </div>
-          <span class="error-message" *ngIf="!isEdadValida()">La edad debe estar entre {{ edadMinima }} y {{ edadMaxima }} años</span>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group full-width">
-          <label>Dueño</label>
-          <div class="input-wrapper">
-            <input type="text" [(ngModel)]="mascotaForm.dueno" name="dueno" placeholder="Ej: Juan Pérez" class="form-input" [class.invalid]="!isDuenoValido()">
-            <span class="error-icon" *ngIf="!isDuenoValido()">⚠️</span>
-          </div>
-          <span class="error-message" *ngIf="!isDuenoValido()">El nombre del dueño es obligatorio</span>
+        <!-- TABLE -->
+        <div *ngIf="obtenerMascotasFiltradas().length > 0" class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Especie</th>
+                <th>Raza</th>
+                <th>Edad</th>
+                <th>Dueño</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let mascota of obtenerMascotasFiltradas()" class="table-row">
+                <td class="cell-name">{{ mascota.nombre }}</td>
+                <td>{{ mascota.especie }}</td>
+                <td>{{ mascota.raza }}</td>
+                <td class="cell-age">{{ mascota.edad }} años</td>
+                <td>{{ mascota.dueno }}</td>
+                <td class="cell-actions">
+                  <button (click)="editarMascota(mascota)" class="action-btn edit-btn" title="Editar">
+                    ✏️
+                  </button>
+                  <button (click)="eliminarMascota(mascota._id)" class="action-btn delete-btn" title="Eliminar">
+                    🗑️
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
+    </div>
 
-      <div class="button-group">
-        <button type="submit" [disabled]="!esFormularioValido()" class="btn btn-primary">
-          {{ mascotaEditando ? '💾 Actualizar' : '➕ Guardar' }}
-        </button>
-        <button type="button" (click)="limpiarFormulario()" class="btn btn-secondary">
-          🗑️ Limpiar
-        </button>
-        <button *ngIf="mascotaEditando" type="button" (click)="cancelarEdicion()" class="btn btn-cancel">
-          ❌ Cancelar
-        </button>
-      </div>
-    </form>
   </div>
-
-  <div class="table-card">
-    <div class="table-header">
-      <h2>📋 Lista de Mascotas</h2>
-      <span class="badge">{{ obtenerMascotasFiltradas().length }}</span>
-    </div>
-    
-    <div *ngIf="obtenerMascotasFiltradas().length === 0" class="empty-state">
-      <div class="empty-icon">🐾</div>
-      <p>No hay mascotas registradas aún</p>
-    </div>
-
-    <div *ngIf="obtenerMascotasFiltradas().length > 0" class="table-wrapper">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Especie</th>
-            <th>Raza</th>
-            <th>Edad</th>
-            <th>Dueño</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let mascota of obtenerMascotasFiltradas()" class="table-row">
-            <td class="cell-nombre"><strong>{{ mascota.nombre }}</strong></td>
-            <td>{{ mascota.especie }}</td>
-            <td>{{ mascota.raza }}</td>
-            <td class="cell-edad">{{ mascota.edad }} años</td>
-            <td>{{ mascota.dueno }}</td>
-            <td class="cell-actions">
-              <button (click)="editarMascota(mascota)" class="btn-action btn-edit" title="Editar">✏️</button>
-              <button (click)="eliminarMascota(mascota._id)" class="btn-action btn-delete" title="Eliminar">🗑️</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-</div>
+</main>
